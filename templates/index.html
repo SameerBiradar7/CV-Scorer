@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV-Scorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>CV-Scorer</h1>
+        <div class="sections">
+            <div class="section">
+                <h2>Upload Resume Only</h2>
+                <form action="{{ url_for('score_resume_only') }}" method="post" enctype="multipart/form-data">
+                    <label for="resume">Select Resume (PDF):</label>
+                    <input type="file" id="resume" name="resume" accept=".pdf" required>
+                    <button type="submit" aria-label="Score resume without job description">Score Resume</button>
+                </form>
+                {% if resume_score is not none %}
+                    <p class="score">Resume Score: {{ resume_score }}%</p>
+                    {% if matches %}
+                        <p class="matches">Matched Keywords: {{ matches | join(', ') }}</p>
+                    {% endif %}
+                    {% if missing_keywords %}
+                        <p class="missing">Missing Keywords (Add These): {{ missing_keywords | join(', ') }}</p>
+                    {% endif %}
+                {% else %}
+                    <p class="score-placeholder">Upload a resume to see your score.</p>
+                {% endif %}
+            </div>
+
+            <div class="section">
+                <h2>Upload Resume with Job Description</h2>
+                <form action="{{ url_for('score_resume_jd') }}" method="post" enctype="multipart/form-data">
+                    <label for="resume_jd">Select Resume (PDF):</label>
+                    <input type="file" id="resume_jd" name="resume_jd" accept=".pdf" required>
+                    <label for="job_desc">Job Description:</label>
+                    <textarea id="job_desc" name="job_desc" placeholder="Paste job description here" required></textarea>
+                    <button type="submit" aria-label="Score resume with job description">Score Resume</button>
+                </form>
+                {% if jd_score is not none %}
+                    <p class="score">Resume Score (with JD): {{ jd_score }}%</p>
+                    {% if matches %}
+                        <p class="matches">Matched Keywords: {{ matches | join(', ') }}</p>
+                    {% endif %}
+                    {% if missing_keywords %}
+                        <p class="missing">Missing Keywords (Add These): {{ missing_keywords | join(', ') }}</p>
+                    {% endif %}
+                {% else %}
+                    <p class="score-placeholder">Upload a resume and job description to see your score.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% else %}
+            <p class="error-placeholder"></p>
+        {% endif %}
+
+        <div class="tips">
+            <h2>Tips to Improve Your ATS Score</h2>
+            <ul>
+                {% for tip in ats_tips %}
+                    <li>{{ tip }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
